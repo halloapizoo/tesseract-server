@@ -11,17 +11,22 @@ def scan_image():
     try:
         data = request.json
         url = data.get('url')
-
+        
         if not url:
             return jsonify({"text": "", "error": "Geen URL meegeleverd"})
-
-        # Download de afbeelding
-        response = requests.get(url, timeout=10)
+        
+        # We sturen een 'User-Agent' mee zodat Amazon/websites de afbeelding niet blokkeren
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
+        response = requests.get(url, headers=headers, timeout=15)
+        
+        if response.status_code != 200:
+            return jsonify({"text": "", "error": f"HTTP error {response.status_code}"})
+            
         img = Image.open(BytesIO(response.content))
-
+        
         # Laat Tesseract de tekst lezen
         text = pytesseract.image_to_string(img)
-
+        
         return jsonify({"text": text, "logo": ""})
     except Exception as e:
         return jsonify({"text": "", "error": str(e)})
