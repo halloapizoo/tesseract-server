@@ -22,9 +22,12 @@ def scan_image():
             return jsonify({"text": "", "error": f"HTTP error {response.status_code}"})
             
         img = Image.open(BytesIO(response.content))
+        
+        # We halen de tekst op via Tesseract
         text = pytesseract.image_to_string(img)
         
-        return jsonify({"text": text, "logo": ""})
+        # Belangrijk: We sturen de tekst netjes terug in de JSON
+        return jsonify({"text": text})
     except Exception as e:
         return jsonify({"text": "", "error": str(e)})
 
