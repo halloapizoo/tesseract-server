@@ -15,7 +15,6 @@ def scan_image():
         if not url:
             return jsonify({"text": "", "error": "Geen URL meegeleverd"})
         
-        # We sturen een 'User-Agent' mee zodat Amazon/websites de afbeelding niet blokkeren
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
         response = requests.get(url, headers=headers, timeout=15)
         
@@ -23,8 +22,6 @@ def scan_image():
             return jsonify({"text": "", "error": f"HTTP error {response.status_code}"})
             
         img = Image.open(BytesIO(response.content))
-        
-        # Laat Tesseract de tekst lezen
         text = pytesseract.image_to_string(img)
         
         return jsonify({"text": text, "logo": ""})
